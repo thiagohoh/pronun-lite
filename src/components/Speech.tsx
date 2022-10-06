@@ -15,33 +15,43 @@ function Speech() {
   const [onSpeech, setOnSpeech] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [wrongWord, setWrongWord] = useState<string>("");
-  const [isSpeaking, setIsSpeaking] = useState<boolean>(false)
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [correct, setCorrect] = useState<boolean>(false);
+  const [textCopy, setTextCopy] = useState<string>("");
 
   function onInputFocus() {
     delay(setError, false);
-    
+    delay(setCorrect, false);
+    setTextCopy("");
+  }
+
+  function onResult(result: string, b: boolean) {
+    setResult(result);
   }
 
   function onSuccess(success: string) {
-    setResult(success);
+    onResult(success, true);
+    setCorrect(true);
     setOnSpeech(false);
   }
 
   function onError(error: string, word: string) {
-    setResult(error);
+    onResult(error, true);
+    setError(true);
+
     setWrongWord(word);
     setOnSpeech(false);
-    setError(true);
   }
 
   function phraseText() {
     setOnSpeech(true);
-    speechTool(input, onError, onSuccess, select,onSpeechStartEnd);
+    speechTool(input, onError, onSuccess, select, onSpeechStartEnd);
+    setTextCopy(input);
     setInp("");
   }
 
-  function onSpeechStartEnd(b:boolean){
-        setIsSpeaking(b)
+  function onSpeechStartEnd(b: boolean) {
+    setIsSpeaking(b);
   }
 
   return (
@@ -56,18 +66,21 @@ function Speech() {
 
       {result && (
         <div>
-          {error ? (
+          {error && (
             <div>
               <h1 className="font-semibold text-base text-center text-rose-600 p-2">
-                That's not quite right confidence: {Number(result).toFixed(2)}%
+                That's not quite right confidence:{" "}
+                {(Number(result) * 100).toFixed(2)}%
               </h1>
               <h1 className="font-semibold text-base text-gray-300 p-2">
                 This is what I understood: {wrongWord}
               </h1>
             </div>
-          ) : (
+          )}
+          {correct && (
             <h1 className="font-semibold text-center text-green-500 p-2">
-              That's correct with {Number(result).toFixed(2)}% of confidence!
+              That's correct with {(Number(result) * 100).toFixed(2)}% of
+              confidence!
             </h1>
           )}
         </div>
@@ -99,7 +112,7 @@ function Speech() {
       <div className="p-2 ">
         <Label label="The word/phrase you want to say:" />
         <p className="break-all block mb-2 mt-2 text-base text-center font-semibold text-gray-200">
-          {input}
+          {input ? input : textCopy}
         </p>
         <div className="pt-4 pb-4">
           <Label label="Speech synthesiser to help you pronounce it." />
@@ -113,7 +126,11 @@ function Speech() {
       </div>
 
       <div className="flex place-content-center">
-        <Button text="Start" onClick={phraseText} disable={input? false: true}  />
+        <Button
+          text="Start"
+          onClick={phraseText}
+          disable={input ? false : true}
+        />
       </div>
     </>
   );
