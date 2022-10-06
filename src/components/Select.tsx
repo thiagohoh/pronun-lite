@@ -18,7 +18,7 @@ function Select({ onOption }: Props) {
         <option value="ja-JP">Japanese</option>
         <option value="ko-KR">Korean</option>
         <option value="es-ES">Spanish</option>
-        <option value="pt-BR">Portugese</option>
+        <option value="pt-BR">Portuguese</option>
       </select>
     </>
   );
